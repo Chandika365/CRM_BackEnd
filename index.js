@@ -2,17 +2,25 @@ import express from "express"
 import mongoose from 'mongoose'
 import bodyParser from "body-parser"
 import routes from './src/routes/crmRoutes'
+import helmet from "helmet"
+import rateLimit from "express-rate-limit"
 
 const app = express()
 
 const PORT = 3000;
 
+// helmet setup
+app.use(helmet());
+
+// Rate limit setup
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+});
+
 //mongoose connection
 mongoose.Promise = global.Promise; 
-mongoose.connect('mongodb://localhost/CRMdb', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect('mongodb://localhost/CRMdb');
 
 //bodyparser setup
 app.use(bodyParser.urlencoded({ extended: true }));
